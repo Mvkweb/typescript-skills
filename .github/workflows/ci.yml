@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate structure & index
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.x"
+      - name: Structure, links, index parity
+        run: python3 checks/validate.py
+      - name: Index matches rules/
+        run: python3 checks/gen_index.py
+
+  examples:
+    name: Compile-check examples
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.x"
+      - uses: actions/setup-node@v6
+      # Same command contributors run locally.
+      - name: Run checks
+        run: bash checks/check.sh
